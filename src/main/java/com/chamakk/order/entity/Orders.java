@@ -16,8 +16,8 @@ public class Orders {
     @Column(name = "order_id")
     private UUID orderId;
 
-    @Column(name = "user_id")
-    private UUID userId;
+    @Column(name = "customer_id")
+    private UUID customerId;
 
     @Column(name = "total_amount")
     private Double totalAmount;
