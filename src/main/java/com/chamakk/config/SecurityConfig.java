@@ -63,6 +63,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/products/").permitAll()
                         .requestMatchers("/api/products/{id}").permitAll()
                         .requestMatchers(HttpMethod.PATCH, "/api/products/*/bestseller/manual").permitAll()
+                        .requestMatchers("/api/categories/**").permitAll()
                         .anyRequest().authenticated());
 
         return http.build();

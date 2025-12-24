@@ -1,11 +1,11 @@
 package com.chamakk.product.repository;
 
-import java.util.UUID;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 import com.chamakk.product.entity.Categories;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-@Repository
+import java.util.UUID;
+
 public interface CategoryRepository extends JpaRepository<Categories, UUID> {
 
+    boolean existsBySlug(String slug);
 }
