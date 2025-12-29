@@ -1,0 +1,179 @@
+[33mcommit 5b2646499d8eb5d692965578759e17c4dc39c0b5[m[33m ([m[1;31morigin/main[m[33m)[m
+Author: AyushBire9 <ayushbire123@gmail.com>
+Date:   Wed Dec 24 13:33:55 2025 +0530
+
+    create categories api (PUT GET DELETE POST methods)
+
+[1mdiff --git a/src/main/java/com/chamakk/config/SecurityConfig.java b/src/main/java/com/chamakk/config/SecurityConfig.java[m
+[1mindex 734d8e3..12629ae 100644[m
+[1m--- a/src/main/java/com/chamakk/config/SecurityConfig.java[m
+[1m+++ b/src/main/java/com/chamakk/config/SecurityConfig.java[m
+[36m@@ -63,6 +63,7 @@[m [mpublic class SecurityConfig {[m
+                         .requestMatchers("/api/products/").permitAll()[m
+                         .requestMatchers("/api/products/{id}").permitAll()[m
+                         .requestMatchers(HttpMethod.PATCH, "/api/products/*/bestseller/manual").permitAll()[m
+[32m+[m[32m                        .requestMatchers("/api/categories/**").permitAll()[m
+                         .anyRequest().authenticated());[m
+ [m
+         return http.build();[m
+[1mdiff --git a/src/main/java/com/chamakk/product/controller/CategoryController.java b/src/main/java/com/chamakk/product/controller/CategoryController.java[m
+[1mnew file mode 100644[m
+[1mindex 0000000..d10261b[m
+[1m--- /dev/null[m
+[1m+++ b/src/main/java/com/chamakk/product/controller/CategoryController.java[m
+[36m@@ -0,0 +1,45 @@[m
+[32m+[m[32mpackage com.chamakk.product.controller;[m
+[32m+[m
+[32m+[m[32mimport com.chamakk.product.dto.CategoryRequest;[m
+[32m+[m[32mimport com.chamakk.product.dto.CategoryResponse;[m
+[32m+[m[32mimport com.chamakk.product.service.CategoryService;[m
+[32m+[m
+[32m+[m[32mimport lombok.RequiredArgsConstructor;[m
+[32m+[m[32mimport org.springframework.web.bind.annotation.*;[m
+[32m+[m
+[32m+[m[32mimport java.util.List;[m
+[32m+[m[32mimport java.util.UUID;[m
+[32m+[m
+[32m+[m[32m@RestController[m
+[32m+[m[32m@RequestMapping("/api/categories")[m
+[32m+[m[32m@RequiredArgsConstructor[m
+[32m+[m[32mpublic class CategoryController {[m
+[32m+[m
+[32m+[m[32m    private final CategoryService categoryService;[m
+[32m+[m
+[32m+[m[32m    @PostMapping[m
+[32m+[m[32m    public CategoryResponse create(@RequestBody CategoryRequest req) {[m
+[32m+[m[32m        return categoryService.create(req);[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    @PutMapping("/{id}")[m
+[32m+[m[32m    public CategoryResponse update(@PathVariable UUID id, @RequestBody CategoryRequest req) {[m
+[32m+[m[32m        return categoryService.update(id, req);[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    @DeleteMapping("/{id}")[m
+[32m+[m[32m    public String delete(@PathVariable UUID id) {[m
+[32m+[m[32m        categoryService.delete(id);[m
+[32m+[m[32m        return "Category deleted successfully!";[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    @GetMapping("/{id}")[m
+[32m+[m[32m    public CategoryResponse getById(@PathVariable UUID id) {[m
+[32m+[m[32m        return categoryService.getById(id);[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    @GetMapping[m
+[32m+[m[32m    public List<CategoryResponse> getAll() {[m
+[32m+[m[32m        return categoryService.getAll();[m
+[32m+[m[32m    }[m
+[32m+[m[32m}[m
+[1mdiff --git a/src/main/java/com/chamakk/product/dto/CategoryRequest.java b/src/main/java/com/chamakk/product/dto/CategoryRequest.java[m
+[1mnew file mode 100644[m
+[1mindex 0000000..676c721[m
+[1m--- /dev/null[m
+[1m+++ b/src/main/java/com/chamakk/product/dto/CategoryRequest.java[m
+[36m@@ -0,0 +1,16 @@[m
+[32m+[m[32mpackage com.chamakk.product.dto;[m
+[32m+[m
+[32m+[m[32mimport lombok.Data;[m
+[32m+[m
+[32m+[m[32mimport java.util.UUID;[m
+[32m+[m
+[32m+[m[32m@Data[m
+[32m+[m[32mpublic class CategoryRequest {[m
+[32m+[m
+[32m+[m[32m    private String categoryName;[m
+[32m+[m[32m    private String slug;[m
+[32m+[m[32m    private String description;[m
+[32m+[m[32m    private String imageUrl;[m
+[32m+[m[32m    private Boolean active;[m
+[32m+[m[32m    private UUID parentId; // optional parent category[m
+[32m+[m[32m}[m
+[1mdiff --git a/src/main/java/com/chamakk/product/dto/CategoryResponse.java b/src/main/java/com/chamakk/product/dto/CategoryResponse.java[m
+[1mnew file mode 100644[m
+[1mindex 0000000..1e835f2[m
+[1m--- /dev/null[m
+[1m+++ b/src/main/java/com/chamakk/product/dto/CategoryResponse.java[m
+[36m@@ -0,0 +1,22 @@[m
+[32m+[m[32mpackage com.chamakk.product.dto;[m
+[32m+[m
+[32m+[m[32mimport lombok.Builder;[m
+[32m+[m[32mimport lombok.Data;[m
+[32m+[m
+[32m+[m[32mimport java.time.OffsetDateTime;[m
+[32m+[m[32mimport java.util.UUID;[m
+[32m+[m
+[32m+[m[32m@Data[m
+[32m+[m[32m@Builder[m
+[32m+[m[32mpublic class CategoryResponse {[m
+[32m+[m
+[32m+[m[32m    private UUID categoryId;[m
+[32m+[m[32m    private UUID parentId;[m
+[32m+[m[32m    private String categoryName;[m
+[32m+[m[32m    private String slug;[m
+[32m+[m[32m    private String description;[m
+[32m+[m[32m    private String imageUrl;[m
+[32m+[m[32m    private Boolean active;[m
+[32m+[m[32m    private OffsetDateTime createdAt;[m
+[32m+[m[32m    private OffsetDateTime updatedAt;[m
+[32m+[m[32m}[m
+[1mdiff --git a/src/main/java/com/chamakk/product/repository/CategoryRepository.java b/src/main/java/com/chamakk/product/repository/CategoryRepository.java[m
+[1mindex 19d19f8..174b001 100644[m
+[1m--- a/src/main/java/com/chamakk/product/repository/CategoryRepository.java[m
+[1m+++ b/src/main/java/com/chamakk/product/repository/CategoryRepository.java[m
+[36m@@ -1,11 +1,11 @@[m
+ package com.chamakk.product.repository;[m
+ [m
+[31m-import java.util.UUID;[m
+[31m-import org.springframework.data.jpa.repository.JpaRepository;[m
+[31m-import org.springframework.stereotype.Repository;[m
+ import com.chamakk.product.entity.Categories;[m
+[32m+[m[32mimport org.springframework.data.jpa.repository.JpaRepository;[m
+[32m+[m
+[32m+[m[32mimport java.util.UUID;[m
+ [m
+[31m-@Repository[m
+ public interface CategoryRepository extends JpaRepository<Categories, UUID> {[m
+ [m
+[32m+[m[32m    boolean existsBySlug(String slug);[m
+ }[m
+[1mdiff --git a/src/main/java/com/chamakk/product/service/CategoryService.java b/src/main/java/com/chamakk/product/service/CategoryService.java[m
+[1mnew file mode 100644[m
+[1mindex 0000000..ed0e937[m
+[1m--- /dev/null[m
+[1m+++ b/src/main/java/com/chamakk/product/service/CategoryService.java[m
+[36m@@ -0,0 +1,94 @@[m
+[32m+[m[32mpackage com.chamakk.product.service;[m
+[32m+[m
+[32m+[m[32mimport com.chamakk.product.dto.CategoryRequest;[m
+[32m+[m[32mimport com.chamakk.product.dto.CategoryResponse;[m
+[32m+[m[32mimport com.chamakk.product.entity.Categories;[m
+[32m+[m[32mimport com.chamakk.product.repository.CategoryRepository;[m
+[32m+[m
+[32m+[m[32mimport lombok.RequiredArgsConstructor;[m
+[32m+[m[32mimport org.springframework.stereotype.Service;[m
+[32m+[m
+[32m+[m[32mimport java.util.List;[m
+[32m+[m[32mimport java.util.UUID;[m
+[32m+[m
+[32m+[m[32m@Service[m
+[32m+[m[32m@RequiredArgsConstructor[m
+[32m+[m[32mpublic class CategoryService {[m
+[32m+[m
+[32m+[m[32m    private final CategoryRepository categoryRepository;[m
+[32m+[m
+[32m+[m[32m    // CREATE CATEGORY[m
+[32m+[m[32m    public CategoryResponse create(CategoryRequest req) {[m
+[32m+[m
+[32m+[m[32m        if (categoryRepository.existsBySlug(req.getSlug())) {[m
+[32m+[m[32m            throw new RuntimeException("Category slug already exists");[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        Categories c = Categories.builder()[m
+[32m+[m[32m                .categoryName(req.getCategoryName())[m
+[32m+[m[32m                .slug(req.getSlug())[m
+[32m+[m[32m                .description(req.getDescription())[m
+[32m+[m[32m                .imageUrl(req.getImageUrl())[m
+[32m+[m[32m                .active(req.getActive() != null ? req.getActive() : true)[m
+[32m+[m[32m                .parentId(req.getParentId())[m
+[32m+[m[32m                .buil

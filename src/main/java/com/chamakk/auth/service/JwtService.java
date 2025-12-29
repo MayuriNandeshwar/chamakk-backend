@@ -1,82 +1,63 @@
 package com.chamakk.auth.service;
 
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
-import java.time.OffsetDateTime;
+import java.time.Instant;
 import java.util.Date;
+import java.util.List;
+import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.chamakk.auth.entity.User;
+import com.chamakk.auth.config.JwtConfig;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class JwtService {
 
-    private final Key signingKey;
-    private final long jwtExpirationMinutes;
-    private final long refreshExpirationDays;
+    private final JwtConfig jwtConfig;
 
-    public JwtService(
-            @Value("${security.jwt.secret}") String secret,
-            @Value("${security.jwt.expiration-minutes}") long jwtExpirationMinutes,
-            @Value("${security.jwt.refresh-expiration-days}") long refreshExpirationDays) {
-
-        this.signingKey = Keys.hmacShaKeyFor(secret.getBytes());
-        this.jwtExpirationMinutes = jwtExpirationMinutes;
-        this.refreshExpirationDays = refreshExpirationDays;
+    private Key getSigningKey() {
+        return Keys.hmacShaKeyFor(
+                jwtConfig.getSecret().getBytes(StandardCharsets.UTF_8));
     }
 
-    // 🔹 Generate Access Token
-    public String generateToken(User user) {
-        Date now = new Date();
-        Date expiry = Date.from(
-                OffsetDateTime.now().plusMinutes(jwtExpirationMinutes).toInstant());
+    public String generateAccessToken(UUID userId, List<String> roles) {
+
+        Instant now = Instant.now();
 
         return Jwts.builder()
-                .setSubject(user.getUserId().toString())
-                .claim("role", user.getRole())
-                .claim("email", user.getEmail())
-                .setIssuedAt(now)
-                .setExpiration(expiry)
-                .signWith(signingKey, SignatureAlgorithm.HS256)
+                .setSubject(userId.toString())
+                .claim("roles", roles)
+                .setIssuer(jwtConfig.getIssuer())
+                .setIssuedAt(Date.from(now))
+                .setExpiration(
+                        Date.from(now.plusSeconds(jwtConfig.getAccessTokenExpiry())))
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    // 🔹 Generate Refresh Token
-    public String generateRefreshToken(User user) {
-        Date expiry = Date.from(
-                OffsetDateTime.now().plusDays(refreshExpirationDays).toInstant());
+    public Claims validateToken(String token) {
 
-        return Jwts.builder()
-                .setSubject(user.getUserId().toString())
-                .setExpiration(expiry)
-                .signWith(signingKey, SignatureAlgorithm.HS256)
-                .compact();
-    }
-
-    // 🔹 Extract Claims
-    public Claims extractClaims(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(signingKey)
+                .setSigningKey(getSigningKey())
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
     }
 
-    public String extractUserId(String token) {
-        return extractClaims(token).getSubject();
+    public UUID extractUserId(String token) {
+        return UUID.fromString(validateToken(token).getSubject());
     }
 
-    public String extractRole(String token) {
-        return extractClaims(token).get("role", String.class);
-    }
-
-    public boolean isTokenExpired(String token) {
-        return extractClaims(token).getExpiration().before(new Date());
+    @SuppressWarnings("unchecked")
+    public List<String> extractRoles(String token) {
+        return validateToken(token).get("roles", List.class);
     }
 }

@@ -2,53 +2,56 @@ package com.chamakk.auth.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.time.OffsetDateTime;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
-import java.util.List;
 
 @Entity
-@Table(name = "users", uniqueConstraints = {
-        @UniqueConstraint(name = "users_email_key", columnNames = "email"),
-        @UniqueConstraint(name = "users_mobile_key", columnNames = "mobile")
-})
+@Table(name = "users")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "user_id", nullable = false, updatable = false)
+    @GeneratedValue
+    @Column(name = "user_id", columnDefinition = "uuid")
     private UUID userId;
 
-    @Column(name = "full_name", length = 100)
-    private String fullName;
-
-    @Column(name = "email", length = 120, nullable = false)
+    @Column(length = 255, unique = true)
     private String email;
 
-    @Column(name = "mobile", length = 15, nullable = false)
+    @Column(length = 20, unique = true)
     private String mobile;
 
-    @Column(name = "is_active")
-    private Boolean isActive;
+    @Column(name = "password_hash", nullable = false)
+    private String password;
 
-    @Column(name = "created_at")
+    @Builder.Default
+    @Column(name = "is_active", nullable = false)
+    private boolean isActive = true;
+
+    @Column(name = "created_at", nullable = false)
     private OffsetDateTime createdAt;
 
-    @Column(name = "updated_at")
+    @Column(name = "updated_at", nullable = false)
     private OffsetDateTime updatedAt;
 
-    @Column(name = "password_hash")
-    private String passwordHash; // only ADMIN uses this
+    @Builder.Default
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<UserRole> userRoles = new HashSet<>();
 
-    private String role; // ADMIN / CUSTOMER
+    @PrePersist
+    public void onCreate() {
+        this.createdAt = OffsetDateTime.now();
+        this.updatedAt = OffsetDateTime.now();
+    }
 
-    // Optional: one user can have many tokens
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<UserTokens> tokens;
+    @PreUpdate
+    public void onUpdate() {
+        this.updatedAt = OffsetDateTime.now();
+    }
 }

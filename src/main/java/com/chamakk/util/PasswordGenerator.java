@@ -9,9 +9,9 @@ public class PasswordGenerator {
 
         PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
-        String hash = passwordEncoder.encode("Admin@123");
+        String hash = passwordEncoder.encode("Chamakk@123");
 
-        System.out.println("RAW PASSWORD  : Admin@123");
+        System.out.println("RAW PASSWORD  : Chamakk@123");
         System.out.println("HASHED PASSWORD : " + hash);
     }
 }
