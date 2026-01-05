@@ -1,4 +1,4 @@
-package com.chamakk.model;
+package com.chamakk.product.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

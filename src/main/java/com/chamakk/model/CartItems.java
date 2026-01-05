@@ -6,6 +6,8 @@ import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
+import com.chamakk.product.entity.ProductVariants;
+
 @Entity
 @Table(name = "cart_items", uniqueConstraints = {
         @UniqueConstraint(columnNames = { "cart_id", "variant_id" })

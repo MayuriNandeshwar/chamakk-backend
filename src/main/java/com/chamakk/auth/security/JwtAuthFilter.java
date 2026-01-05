@@ -23,7 +23,19 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
 
+    private static final String ACCESS_TOKEN = "ACCESS_TOKEN";
+
     private final JwtService jwtService;
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getRequestURI();
+
+        return path.startsWith("/api/auth/")
+                || path.startsWith("/swagger")
+                || path.startsWith("/v3/api-docs")
+                || "OPTIONS".equalsIgnoreCase(request.getMethod());
+    }
 
     @Override
     protected void doFilterInternal(
@@ -31,44 +43,34 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain) throws ServletException, IOException {
 
-        // ✅ 1. Skip login endpoint
-        if (request.getRequestURI().equals("/api/auth/admin/login")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
+        try {
+            Cookie[] cookies = request.getCookies();
+            if (cookies == null) {
+                filterChain.doFilter(request, response);
+                return;
+            }
 
-        Cookie[] cookies = request.getCookies();
-        if (cookies == null) {
-            filterChain.doFilter(request, response);
-            return;
-        }
+            for (Cookie cookie : cookies) {
+                if (ACCESS_TOKEN.equals(cookie.getName())) {
 
-        for (Cookie cookie : cookies) {
-            if ("ACCESS_TOKEN".equals(cookie.getName())) {
-                try {
                     String token = cookie.getValue();
 
                     UUID userId = jwtService.extractUserId(token);
                     List<String> roles = jwtService.extractRoles(token);
 
                     var authorities = roles.stream()
-                            .map(SimpleGrantedAuthority::new)
+                            .map(r -> new SimpleGrantedAuthority("ROLE_" + r))
                             .toList();
 
-                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                            userId,
-                            null,
-                            authorities);
+                    var auth = new UsernamePasswordAuthenticationToken(
+                            userId, null, authorities);
 
-                    SecurityContextHolder.getContext()
-                            .setAuthentication(authentication);
-
-                } catch (Exception ex) {
-                    // Invalid / expired token — clear context
-                    SecurityContextHolder.clearContext();
+                    SecurityContextHolder.getContext().setAuthentication(auth);
+                    break;
                 }
-                break;
             }
+        } catch (Exception ex) {
+            SecurityContextHolder.clearContext();
         }
 
         filterChain.doFilter(request, response);

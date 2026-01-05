@@ -6,6 +6,8 @@ import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
+import com.chamakk.product.entity.ProductVariants;
+
 @Entity
 @Table(name = "order_items")
 @Getter

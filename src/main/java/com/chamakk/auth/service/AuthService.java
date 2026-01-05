@@ -89,4 +89,44 @@ public class AuthService {
                 }
         }
 
+        @Transactional
+        public record RefreshResult(UUID userId, List<String> roles, String accessToken) {
+        }
+
+        public RefreshResult refresh(String refreshToken) {
+
+                UserSession session = userSessionRepository
+                                .findByRefreshToken(refreshToken)
+                                .orElseThrow(() -> new BadCredentialsException("Invalid refresh token"));
+
+                if (!"ACTIVE".equals(session.getStatus())
+                                || session.getExpiresAt().isBefore(OffsetDateTime.now())) {
+                        throw new BadCredentialsException("Session expired");
+                }
+
+                User user = session.getUser();
+
+                List<String> roles = user.getUserRoles()
+                                .stream()
+                                .map(ur -> ur.getRole().getRoleName())
+                                .toList();
+
+                String newAccessToken = jwtService.generateAccessToken(
+                                user.getUserId(), roles);
+
+                session.setLastUsedAt(OffsetDateTime.now());
+                userSessionRepository.save(session);
+
+                return new RefreshResult(user.getUserId(), roles, newAccessToken);
+        }
+
+        @Transactional
+        public void logout(String refreshToken) {
+                userSessionRepository.findByRefreshToken(refreshToken)
+                                .ifPresent(session -> {
+                                        session.setStatus("REVOKED");
+                                        session.setRevokedReason("USER_LOGOUT");
+                                });
+        }
+
 }
