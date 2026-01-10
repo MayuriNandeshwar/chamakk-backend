@@ -17,9 +17,10 @@ public class LoginResponse {
 
     @JsonIgnore
     private String accessToken;
+    private String refreshToken;
 
     public LoginResponse withoutToken() {
-        return new LoginResponse(userId, roles, null);
+        return new LoginResponse(userId, roles, null, null);
     }
 
 }

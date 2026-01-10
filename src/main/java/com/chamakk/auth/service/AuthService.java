@@ -48,12 +48,13 @@ public class AuthService {
 
                 List<String> roles = user.getUserRoles()
                                 .stream()
-                                .map(ur -> ur.getRole().getRoleName())
+                                .map(ur -> "ROLE_" + ur.getRole().getRoleName())
                                 .toList();
 
                 String accessToken = jwtService.generateAccessToken(
                                 user.getUserId(),
                                 roles);
+                String refreshToken = UUID.randomUUID().toString();
                 InetAddress ipAddress = resolveClientIp(httpRequest);
 
                 UserSession session = UserSession.builder()
@@ -61,7 +62,7 @@ public class AuthService {
                                 .status("ACTIVE")
                                 .deviceType("WEB")
                                 .deviceId("WEB-" + UUID.randomUUID())
-                                .refreshToken(UUID.randomUUID().toString())
+                                .refreshToken(refreshToken)
                                 .createdAt(OffsetDateTime.now())
                                 .expiresAt(OffsetDateTime.now().plusDays(7))
                                 .ipAddress(ipAddress) // ✅ inet-compatible
@@ -73,7 +74,7 @@ public class AuthService {
                 return new LoginResponse(
                                 user.getUserId(),
                                 roles,
-                                accessToken);
+                                accessToken, refreshToken);
         }
 
         private InetAddress resolveClientIp(HttpServletRequest request) {
@@ -108,7 +109,7 @@ public class AuthService {
 
                 List<String> roles = user.getUserRoles()
                                 .stream()
-                                .map(ur -> ur.getRole().getRoleName())
+                                .map(ur -> "ROLE_" + ur.getRole().getRoleName())
                                 .toList();
 
                 String newAccessToken = jwtService.generateAccessToken(

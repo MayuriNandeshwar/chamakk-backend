@@ -28,23 +28,32 @@ public class AuthController {
         @PostMapping("/login")
         public ResponseEntity<LoginResponse> login(
                         @RequestBody LoginRequest request,
-                        HttpServletRequest httpRequest, HttpServletResponse response) {
+                        HttpServletRequest httpRequest,
+                        HttpServletResponse response) {
 
                 LoginResponse loginResponse = authService.login(request, httpRequest);
 
-                ResponseCookie cookie = ResponseCookie.from("ACCESS_TOKEN", loginResponse.getAccessToken())
+                // 🔥 FIX: Use Lax for localhost
+                ResponseCookie accessCookie = ResponseCookie.from("ACCESS_TOKEN", loginResponse.getAccessToken())
                                 .httpOnly(true)
-                                .secure(false) // dev
-                                .sameSite("Lax")
+                                .secure(false) // HTTP (localhost)
+                                .sameSite("Lax") // ✅ CHANGED from "None"
                                 .path("/")
-                                .maxAge(1800)
+                                .maxAge(1800) // 30 minutes
                                 .build();
 
-                // ✅ THIS IS THE ONLY CORRECT WAY
-                response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+                ResponseCookie refreshCookie = ResponseCookie.from("REFRESH_TOKEN", loginResponse.getRefreshToken())
+                                .httpOnly(true)
+                                .secure(false)
+                                .sameSite("Lax") // ✅ CHANGED from "None"
+                                .path("/")
+                                .maxAge(7 * 24 * 60 * 60) // 7 days
+                                .build();
 
-                return ResponseEntity.ok(
-                                loginResponse.withoutToken());
+                response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
+                response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
+
+                return ResponseEntity.ok(loginResponse.withoutToken());
         }
 
         @PostMapping("/refresh")
@@ -57,15 +66,14 @@ public class AuthController {
                 ResponseCookie accessCookie = ResponseCookie.from("ACCESS_TOKEN", result.accessToken())
                                 .httpOnly(true)
                                 .secure(false)
-                                .sameSite("Lax")
+                                .sameSite("Lax") // ✅ CHANGED
                                 .path("/")
                                 .maxAge(1800)
                                 .build();
 
                 response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
 
-                return ResponseEntity.ok(
-                                new RefreshResponse(result.userId(), result.roles()));
+                return ResponseEntity.ok(new RefreshResponse(result.userId(), result.roles()));
         }
 
         @PostMapping("/logout")

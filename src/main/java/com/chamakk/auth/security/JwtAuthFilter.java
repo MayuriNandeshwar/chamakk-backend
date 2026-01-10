@@ -3,13 +3,14 @@ package com.chamakk.auth.security;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-
+import org.springframework.security.core.Authentication;
 import com.chamakk.auth.service.JwtService;
 
 import jakarta.servlet.FilterChain;
@@ -18,24 +19,13 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
 
 @Component
 @RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
 
-    private static final String ACCESS_TOKEN = "ACCESS_TOKEN";
-
     private final JwtService jwtService;
-
-    @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) {
-        String path = request.getRequestURI();
-
-        return path.startsWith("/api/auth/")
-                || path.startsWith("/swagger")
-                || path.startsWith("/v3/api-docs")
-                || "OPTIONS".equalsIgnoreCase(request.getMethod());
-    }
 
     @Override
     protected void doFilterInternal(
@@ -43,36 +33,41 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain) throws ServletException, IOException {
 
-        try {
-            Cookie[] cookies = request.getCookies();
-            if (cookies == null) {
-                filterChain.doFilter(request, response);
-                return;
+        String token = extractTokenFromCookie(request);
+
+        if (token != null) {
+            try {
+                UUID userId = jwtService.extractUserId(token);
+                List<String> roles = jwtService.extractRoles(token);
+
+                List<GrantedAuthority> authorities = roles.stream()
+                        .map(SimpleGrantedAuthority::new)
+                        .collect(Collectors.toList());
+
+                Authentication auth = new UsernamePasswordAuthenticationToken(
+                        userId,
+                        null,
+                        authorities);
+
+                SecurityContextHolder.getContext().setAuthentication(auth);
+
+            } catch (Exception e) {
+                SecurityContextHolder.clearContext();
             }
-
-            for (Cookie cookie : cookies) {
-                if (ACCESS_TOKEN.equals(cookie.getName())) {
-
-                    String token = cookie.getValue();
-
-                    UUID userId = jwtService.extractUserId(token);
-                    List<String> roles = jwtService.extractRoles(token);
-
-                    var authorities = roles.stream()
-                            .map(r -> new SimpleGrantedAuthority("ROLE_" + r))
-                            .toList();
-
-                    var auth = new UsernamePasswordAuthenticationToken(
-                            userId, null, authorities);
-
-                    SecurityContextHolder.getContext().setAuthentication(auth);
-                    break;
-                }
-            }
-        } catch (Exception ex) {
-            SecurityContextHolder.clearContext();
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    private String extractTokenFromCookie(HttpServletRequest request) {
+        if (request.getCookies() == null)
+            return null;
+
+        for (Cookie cookie : request.getCookies()) {
+            if ("ACCESS_TOKEN".equals(cookie.getName())) {
+                return cookie.getValue();
+            }
+        }
+        return null;
     }
 }

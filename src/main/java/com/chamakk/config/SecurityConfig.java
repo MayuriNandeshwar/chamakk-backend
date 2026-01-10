@@ -64,8 +64,13 @@ public class SecurityConfig {
                                 "/v3/api-docs/**")
                         .permitAll()
 
+                        // 🔐 SUPER ADMIN FIRST (MORE SPECIFIC)
+                        .requestMatchers("/api/admin/system/**")
+                        .hasRole("SUPER_ADMIN")
+
+                        // 🔐 ADMIN + SUPER ADMIN
                         .requestMatchers("/api/admin/**")
-                        .hasRole("ADMIN")
+                        .hasAnyRole("ADMIN", "SUPER_ADMIN")
 
                         .anyRequest().authenticated())
 
