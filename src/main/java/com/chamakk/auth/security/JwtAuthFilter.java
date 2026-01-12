@@ -11,6 +11,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+
 import com.chamakk.auth.service.JwtService;
 
 import jakarta.servlet.FilterChain;
@@ -19,13 +21,23 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.GrantedAuthority;
 
 @Component
 @RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getRequestURI();
+
+        return path.startsWith("/api/public/")
+                || path.startsWith("/api/auth/")
+                || path.startsWith("/swagger-ui/")
+                || path.startsWith("/v3/api-docs")
+                || path.equals("/error");
+    }
 
     @Override
     protected void doFilterInternal(
@@ -41,15 +53,15 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 List<String> roles = jwtService.extractRoles(token);
 
                 List<GrantedAuthority> authorities = roles.stream()
-                        .map(SimpleGrantedAuthority::new)
+                        .map(role -> (GrantedAuthority) new SimpleGrantedAuthority(role))
                         .collect(Collectors.toList());
 
-                Authentication auth = new UsernamePasswordAuthenticationToken(
+                Authentication authentication = new UsernamePasswordAuthenticationToken(
                         userId,
                         null,
                         authorities);
 
-                SecurityContextHolder.getContext().setAuthentication(auth);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
 
             } catch (Exception e) {
                 SecurityContextHolder.clearContext();

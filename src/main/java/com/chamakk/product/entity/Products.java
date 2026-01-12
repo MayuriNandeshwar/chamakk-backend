@@ -82,4 +82,5 @@ public class Products {
 
     @Column(name = "seo_keywords")
     private String seoKeywords;
+
 }

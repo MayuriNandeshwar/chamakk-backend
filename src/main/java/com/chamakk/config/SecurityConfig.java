@@ -36,13 +36,27 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:3000"));
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        config.setAllowedHeaders(List.of("*"));
+
+        config.setAllowedOrigins(List.of(
+                "http://localhost:3000",
+                "https://admin.chamakk.co.in" // future-ready
+        ));
+
+        config.setAllowedMethods(List.of(
+                "GET", "POST", "PUT", "DELETE", "OPTIONS"));
+
+        config.setAllowedHeaders(List.of(
+                "Authorization",
+                "Content-Type",
+                "X-Requested-With"));
+
+        config.setExposedHeaders(List.of("Authorization"));
         config.setAllowCredentials(true);
+        config.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
+
         return source;
     }
 
@@ -57,23 +71,25 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers("/api/public/**").permitAll()
+
                         .requestMatchers(
                                 "/api/auth/**",
+                                "/api/public/**",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**")
                         .permitAll()
 
-                        // 🔐 SUPER ADMIN FIRST (MORE SPECIFIC)
+                        // SUPER ADMIN
                         .requestMatchers("/api/admin/system/**")
                         .hasRole("SUPER_ADMIN")
 
-                        // 🔐 ADMIN + SUPER ADMIN
+                        // ADMIN + SUPER ADMIN
                         .requestMatchers("/api/admin/**")
                         .hasAnyRole("ADMIN", "SUPER_ADMIN")
 
                         .anyRequest().authenticated())
 
+                // IMPORTANT: JWT before UsernamePasswordAuthenticationFilter
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
