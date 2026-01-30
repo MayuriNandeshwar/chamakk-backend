@@ -32,7 +32,7 @@ public class ProductSectionProduct {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
-    private Products product;
+    private Products products;
 
     @Column(name = "display_order", nullable = false)
     private Integer displayOrder;

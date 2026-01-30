@@ -9,7 +9,7 @@ public class SectionProductMapper {
         return SectionProductResponseDto.builder()
                 .id(entity.getProductSectionProductsId())
                 .sectionId(entity.getSection().getSectionId())
-                .productId(entity.getProduct().getProductId())
+                .productId(entity.getProducts().getProductId())
                 .displayOrder(entity.getDisplayOrder())
                 .isActive(entity.getIsActive())
                 .build();

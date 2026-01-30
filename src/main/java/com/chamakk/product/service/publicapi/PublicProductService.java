@@ -33,7 +33,7 @@ public class PublicProductService {
                 List<ProductVariants> variants = variantRepo.findByProducts_ProductIdAndIsActiveTrue(
                                 product.getProductId());
 
-                List<ProductEntityAttribute> attributes = attributeRepo.findByProduct_ProductId(
+                List<ProductEntityAttribute> attributes = attributeRepo.findByProducts_ProductId(
                                 product.getProductId());
 
                 List<ProductImages> images = imageRepo.findByProducts_ProductIdOrderByPositionAsc(

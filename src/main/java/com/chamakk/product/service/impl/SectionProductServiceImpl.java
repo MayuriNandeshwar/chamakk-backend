@@ -22,40 +22,40 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SectionProductServiceImpl implements SectionProductService {
 
-    private final ProductSectionRepository sectionRepo;
-    private final ProductRepository productRepo;
-    private final ProductSectionProductRepository mappingRepo;
+        private final ProductSectionRepository sectionRepo;
+        private final ProductRepository productRepo;
+        private final ProductSectionProductRepository mappingRepo;
 
-    @Override
-    public SectionProductResponseDto addProductToSection(SectionProductRequestDto dto) {
+        @Override
+        public SectionProductResponseDto addProductToSection(SectionProductRequestDto dto) {
 
-        if (mappingRepo.existsBySection_SectionIdAndProduct_ProductId(
-                dto.getSectionId(), dto.getProductId())) {
-            throw new RuntimeException("Product already added to this section");
+                if (mappingRepo.existsBySection_SectionIdAndProducts_ProductId(
+                                dto.getSectionId(), dto.getProductId())) {
+                        throw new RuntimeException("Product already added to this section");
+                }
+
+                ProductSection section = sectionRepo.findById(dto.getSectionId())
+                                .orElseThrow(() -> new RuntimeException("Section not found"));
+
+                Products product = productRepo.findById(dto.getProductId())
+                                .orElseThrow(() -> new RuntimeException("Product not found"));
+
+                ProductSectionProduct mapping = ProductSectionProduct.builder()
+                                .section(section)
+                                .products(product)
+                                .displayOrder(dto.getDisplayOrder())
+                                .isActive(dto.getIsActive())
+                                .build();
+
+                return SectionProductMapper.toResponse(mappingRepo.save(mapping));
         }
 
-        ProductSection section = sectionRepo.findById(dto.getSectionId())
-                .orElseThrow(() -> new RuntimeException("Section not found"));
-
-        Products product = productRepo.findById(dto.getProductId())
-                .orElseThrow(() -> new RuntimeException("Product not found"));
-
-        ProductSectionProduct mapping = ProductSectionProduct.builder()
-                .section(section)
-                .product(product)
-                .displayOrder(dto.getDisplayOrder())
-                .isActive(dto.getIsActive())
-                .build();
-
-        return SectionProductMapper.toResponse(mappingRepo.save(mapping));
-    }
-
-    @Override
-    public List<SectionProductResponseDto> getProductsBySection(UUID sectionId) {
-        return mappingRepo
-                .findBySection_SectionIdAndIsActiveTrueOrderByDisplayOrderAsc(sectionId)
-                .stream()
-                .map(SectionProductMapper::toResponse)
-                .toList();
-    }
+        @Override
+        public List<SectionProductResponseDto> getProductsBySection(UUID sectionId) {
+                return mappingRepo
+                                .findBySection_SectionIdAndIsActiveTrueOrderByDisplayOrderAsc(sectionId)
+                                .stream()
+                                .map(SectionProductMapper::toResponse)
+                                .toList();
+        }
 }

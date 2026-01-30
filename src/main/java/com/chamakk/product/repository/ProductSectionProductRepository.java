@@ -11,7 +11,7 @@ public interface ProductSectionProductRepository
 
     List<ProductSectionProduct> findBySection_SectionIdAndIsActiveTrueOrderByDisplayOrderAsc(UUID sectionId);
 
-    boolean existsBySection_SectionIdAndProduct_ProductId(UUID sectionId, UUID productId);
+    boolean existsBySection_SectionIdAndProducts_ProductId(UUID sectionId, UUID productId);
 
     void deleteBySection_SectionId(UUID sectionId);
 }

@@ -9,11 +9,11 @@ import java.util.UUID;
 public interface ProductEntityAttributeRepository
         extends JpaRepository<ProductEntityAttribute, UUID> {
 
-    List<ProductEntityAttribute> findByProduct_ProductId(UUID productId);
+    List<ProductEntityAttribute> findByProducts_ProductId(UUID productId);
 
     List<ProductEntityAttribute> findByVariant_VariantId(UUID variantId);
 
-    void deleteByProduct_ProductId(UUID productId);
+    void deleteByProducts_ProductId(UUID productId);
 
     void deleteByVariant_VariantId(UUID variantId);
 }
