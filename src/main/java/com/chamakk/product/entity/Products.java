@@ -2,6 +2,7 @@ package com.chamakk.product.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
@@ -48,6 +49,37 @@ public class Products {
     @Column(name = "is_manual_bestseller", nullable = false)
     private boolean isManualBestseller;
 
+    @Column(name = "is_auto_bestseller", nullable = false)
+    private boolean isAutoBestseller;
+
+    // ===============================
+    // 🔥 NEW ARRIVAL SUPPORT
+    // ===============================
+
+    @Column(name = "is_new_arrival", nullable = false)
+    private boolean isNewArrival;
+
+    @Column(name = "launch_at")
+    private OffsetDateTime launchAt;
+
+    @Column(name = "new_arrival_position")
+    private Integer newArrivalPosition;
+
+    // ===============================
+    // 🔍 SEO FIELDS (RESTORED)
+    // ===============================
+
+    @Column(name = "seo_title")
+    private String seoTitle;
+
+    @Column(name = "seo_description")
+    private String seoDescription;
+
+    @Column(name = "seo_keywords")
+    private String seoKeywords;
+
+    // ===============================
+
     @Column(name = "created_at", nullable = false)
     private OffsetDateTime createdAt;
 
@@ -64,7 +96,7 @@ public class Products {
     private UUID updatedBy;
 
     @Column(name = "search_vector", columnDefinition = "tsvector", insertable = false, updatable = false)
-    private String searchVector; // mapped as String (read-only usage)
+    private String searchVector;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "product_type_id", nullable = false)
@@ -74,13 +106,13 @@ public class Products {
     @JoinColumn(name = "category_id", nullable = false)
     private Categories categories;
 
-    @Column(name = "seo_title")
-    private String seoTitle;
+    // ===============================
+    // Helper Method (RESTORED)
+    // ===============================
 
-    @Column(name = "seo_description")
-    private String seoDescription;
-
-    @Column(name = "seo_keywords")
-    private String seoKeywords;
-
+    public static Products withId(UUID productId) {
+        Products p = new Products();
+        p.setProductId(productId);
+        return p;
+    }
 }

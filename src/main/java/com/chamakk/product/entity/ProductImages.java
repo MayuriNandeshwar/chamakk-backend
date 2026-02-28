@@ -2,6 +2,7 @@ package com.chamakk.product.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
@@ -40,6 +41,10 @@ public class ProductImages {
 
     @Column(name = "is_primary", nullable = false)
     private boolean isPrimary;
+
+    // 🔥 NEW (Hover Image Support)
+    @Column(name = "is_hover_image", nullable = false)
+    private boolean isHoverImage;
 
     @Column(name = "created_at", nullable = false)
     private OffsetDateTime createdAt;

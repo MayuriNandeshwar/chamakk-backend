@@ -3,10 +3,16 @@ package com.chamakk.product.repository;
 import com.chamakk.product.entity.Categories;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
-public interface CategoryRepository
-        extends JpaRepository<Categories, UUID> {
+public interface CategoryRepository extends JpaRepository<Categories, UUID> {
 
-    boolean existsByCategoryName(String categoryName);
+    Optional<Categories> findBySlug(String slug);
+
+    boolean existsBySlug(String slug);
+
+    List<Categories> findByDeletedAtIsNull();
+
 }

@@ -26,72 +26,73 @@ import com.chamakk.auth.security.JwtAuthFilter;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtAuthFilter jwtAuthFilter;
+        private final JwtAuthFilter jwtAuthFilter;
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
-    }
+        @Bean
+        public PasswordEncoder passwordEncoder() {
+                return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+        }
 
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration config = new CorsConfiguration();
+        @Bean
+        public CorsConfigurationSource corsConfigurationSource() {
+                CorsConfiguration config = new CorsConfiguration();
 
-        config.setAllowedOrigins(List.of(
-                "http://localhost:3000",
-                "https://admin.chamakk.co.in" // future-ready
-        ));
+                config.setAllowedOrigins(List.of(
+                                "http://localhost:3000",
+                                "https://admin.chamakk.co.in" // future-ready
+                ));
 
-        config.setAllowedMethods(List.of(
-                "GET", "POST", "PUT", "DELETE", "OPTIONS"));
+                config.setAllowedMethods(List.of(
+                                "GET", "POST", "PUT", "DELETE", "OPTIONS"));
 
-        config.setAllowedHeaders(List.of(
-                "Authorization",
-                "Content-Type",
-                "X-Requested-With"));
+                config.setAllowedHeaders(List.of(
+                                "Authorization",
+                                "Content-Type",
+                                "X-Requested-With"));
 
-        config.setExposedHeaders(List.of("Authorization"));
-        config.setAllowCredentials(true);
-        config.setMaxAge(3600L);
+                config.setExposedHeaders(List.of("Authorization"));
+                config.setAllowCredentials(true);
+                config.setMaxAge(3600L);
 
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config);
+                UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+                source.registerCorsConfiguration("/**", config);
 
-        return source;
-    }
+                return source;
+        }
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        @Bean
+        public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        http
-                .csrf(csrf -> csrf.disable())
-                .cors(Customizer.withDefaults())
+                http
+                                .csrf(csrf -> csrf.disable())
+                                .cors(Customizer.withDefaults())
 
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                                .sessionManagement(session -> session
+                                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                                .authorizeHttpRequests(auth -> auth
+                                                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                        .requestMatchers(
-                                "/api/auth/**",
-                                "/api/public/**",
-                                "/swagger-ui/**",
-                                "/v3/api-docs/**")
-                        .permitAll()
+                                                .requestMatchers(
+                                                                "/api/auth/**",
+                                                                "/api/public/**",
+                                                                "/swagger-ui/**",
+                                                                "/v3/api-docs/**")
+                                                .permitAll()
 
-                        // SUPER ADMIN
-                        .requestMatchers("/api/admin/system/**")
-                        .hasRole("SUPER_ADMIN")
+                                                // SUPER ADMIN
+                                                .requestMatchers("/api/admin/system/**")
+                                                .hasRole("SUPER_ADMIN")
 
-                        // ADMIN + SUPER ADMIN
-                        .requestMatchers("/api/admin/**")
-                        .hasAnyRole("ADMIN", "SUPER_ADMIN")
+                                                // ADMIN + SUPER ADMIN
+                                                .requestMatchers("/api/admin/**")
+                                                .hasAnyRole("ADMIN", "SUPER_ADMIN")
 
-                        .anyRequest().authenticated())
+                                                .anyRequest().authenticated())
 
-                // IMPORTANT: JWT before UsernamePasswordAuthenticationFilter
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                                // IMPORTANT: JWT before UsernamePasswordAuthenticationFilter
+                                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
-        return http.build();
-    }
+                return http.build();
+        }
 }

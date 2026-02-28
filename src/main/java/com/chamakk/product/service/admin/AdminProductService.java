@@ -20,11 +20,15 @@ public class AdminProductService {
         private final ProductRepository productRepo;
         private final CategoryRepository categoryRepo;
         private final ProductImageRepository imageRepo;
+        private final ProductTypeRepository typeRepo;
         private final ProductVariantRepository variantRepo;
         private final ProductEntityAttributeRepository attributeRepo;
 
         @Transactional
         public UUID createProduct(AdminProductCreateDto dto) {
+
+                ProductTypes productType = typeRepo.findById(dto.getProductTypeId())
+                                .orElseThrow(() -> new RuntimeException("Product type not found"));
 
                 Categories category = categoryRepo.findById(dto.getCategoryId())
                                 .orElseThrow(() -> new RuntimeException("Category not found"));
@@ -33,12 +37,16 @@ public class AdminProductService {
                                 .productName(dto.getProductName())
                                 .slug(generateSlug(dto.getProductName()))
                                 .categories(category)
+                                .productType(productType)
                                 .brand(dto.getBrand())
                                 .shortDescription(dto.getShortDescription())
                                 .productDescription(dto.getDescription())
                                 .seoTitle(dto.getSeoTitle())
                                 .seoDescription(dto.getSeoDescription())
                                 .seoKeywords(dto.getSeoKeywords())
+                                .isAutoBestseller(false)
+                                .isFeatured(false)
+                                .isManualBestseller(false)
                                 .isActive(false) // DRAFT
                                 .createdAt(OffsetDateTime.now())
                                 .updatedAt(OffsetDateTime.now())

@@ -2,6 +2,7 @@ package com.chamakk.product.service.publicapi;
 
 import java.util.List;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +25,7 @@ public class PublicProductService {
         private final ProductImageRepository imageRepo;
 
         @Transactional(readOnly = true)
+        @Cacheable(value = "publicProduct", key = "#slug")
         public PublicProductDetailDto getProductBySlug(String slug) {
 
                 Products product = productRepo

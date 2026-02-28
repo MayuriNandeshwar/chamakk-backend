@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.chamakk.product.dto.ProductAttributeCreateDto;
 import com.chamakk.product.entity.ProductAttribute;
-import com.chamakk.product.service.AdminProductAttributeService;
+import com.chamakk.product.service.admin.AdminProductAttributeService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

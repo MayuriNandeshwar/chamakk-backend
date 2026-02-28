@@ -16,6 +16,7 @@ public interface BestsellerRepository extends JpaRepository<Products, UUID> {
                 p.product_id,
                 p.product_name,
                 p.slug,
+                p.short_description,
                 pv.sku,
                 pv.price,
                 pv.mrp,
@@ -26,18 +27,31 @@ public interface BestsellerRepository extends JpaRepository<Products, UUID> {
                 pi.product_image_url,
                 (COALESCE(i.available_quantity, 0) > 0)
             FROM products p
-            JOIN product_variants pv ON pv.product_id = p.product_id
-            LEFT JOIN inventory i ON i.variant_id = pv.variant_id
+            JOIN product_variants pv
+                ON pv.product_id = p.product_id
+                AND pv.is_active = true
+                AND pv.is_default = true
+            LEFT JOIN inventory i
+                ON i.variant_id = pv.variant_id
             LEFT JOIN product_images pi
-                ON pi.variant_id = pv.variant_id AND pi.is_primary = true
-            LEFT JOIN order_items oi ON oi.variant_id = pv.variant_id
+                ON pi.variant_id = pv.variant_id
+                AND pi.is_primary = true
+            LEFT JOIN order_items oi
+                ON oi.variant_id = pv.variant_id
             LEFT JOIN orders o
-                ON o.order_id = oi.order_id AND o.payment_status = 'PAID'
-            WHERE p.is_active = true AND pv.is_active = true
+                ON o.order_id = oi.order_id
+                AND o.payment_status = 'PAID'
+            WHERE p.is_active = true
+            AND p.deleted_at IS NULL
+            AND (
+                  p.is_manual_bestseller = true
+                  OR p.is_auto_bestseller = true
+                )
             GROUP BY
                 p.product_id,
                 p.product_name,
                 p.slug,
+                p.short_description,
                 pv.sku,
                 pv.price,
                 pv.mrp,

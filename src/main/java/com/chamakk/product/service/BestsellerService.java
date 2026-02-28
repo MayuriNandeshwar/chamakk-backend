@@ -37,15 +37,17 @@ public class BestsellerService {
 
         return rows.stream()
                 .map(r -> new BestsellerProductDto(
-                        (UUID) r[0],
-                        (String) r[1],
-                        (String) r[2],
-                        (String) r[3],
-                        (BigDecimal) r[4],
-                        (BigDecimal) r[5],
-                        (BigDecimal) r[6],
-                        (String) r[7],
-                        (Boolean) r[8]))
+                        (UUID) r[0], // product_id
+                        (String) r[1], // product_name
+                        (String) r[2], // slug
+                        (String) r[3], // short_description
+                        (String) r[4], // sku
+                        (BigDecimal) r[5], // price
+                        (BigDecimal) r[6], // mrp
+                        (BigDecimal) r[7], // discount_percentage
+                        (String) r[8], // image_url
+                        (Boolean) r[9] // in_stock
+                ))
                 .toList();
     }
 

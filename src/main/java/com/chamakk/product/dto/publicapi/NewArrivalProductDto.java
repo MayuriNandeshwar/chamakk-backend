@@ -1,24 +1,16 @@
-package com.chamakk.product.dto;
+package com.chamakk.product.dto.publicapi;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.UUID;
 
-/**
- * Bestseller product DTO
- * Version: v1.1
- * Added: shortDescription
- */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class BestsellerProductDto {
+public class NewArrivalProductDto {
 
     @JsonProperty("productId")
     private UUID productId;
@@ -46,6 +38,9 @@ public class BestsellerProductDto {
 
     @JsonProperty("imageUrl")
     private String imageUrl;
+
+    @JsonProperty("hoverImageUrl")
+    private String hoverImageUrl;
 
     @JsonProperty("inStock")
     private Boolean inStock;

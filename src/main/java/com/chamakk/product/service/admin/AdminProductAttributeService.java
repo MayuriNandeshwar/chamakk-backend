@@ -1,4 +1,4 @@
-package com.chamakk.product.service;
+package com.chamakk.product.service.admin;
 
 import org.springframework.stereotype.Service;
 
