@@ -1,7 +1,7 @@
-**Chamakk E-Commerce Backend Service**
+**SUNHOM E-Commerce Backend Service**
 **Overview**
 
-This repository contains the **Spring Boot backend service** for **Chamakk**, a home décor e-commerce platform specializing in premium candles, wax melts, and fragrance products.
+This repository contains the **Spring Boot backend service** for **SUNHOM**, a home décor e-commerce platform specializing in premium candles, wax melts, and fragrance products.
 
 The backend is responsible for:
 
@@ -34,7 +34,7 @@ Secure password handling
 
 **Project Structure**
 backend-service/
-├── src/main/java/com/chamakk/backend
+├── src/main/java/com/sunhom/backend
 │   ├── controller        # REST controllers (Admin, Products, etc.)
 │   ├── dtos              # Request/Response DTOs
 │   ├── model             # JPA entities
@@ -47,7 +47,7 @@ backend-service/
 │   └── application.properties
 │
 ├── database
-│   ├── chamakk_full_db.sql   # Full DB schema + seed data
+│   ├── sunhom_full_db.sql   # Full DB schema + seed data
 │   └── README.md             # DB restore instructions
 │
 ├── pom.xml
@@ -120,7 +120,7 @@ Database artifacts versioned with backend
 
 **Frontend Integration**
 This backend is consumed by:
-👉 **Chamakk Admin Frontend (Next.js)**
+👉 **sunhom Admin Frontend (Next.js)**
 REST APIs
 JWT-based authentication
 Role-based access (admin-focused)
@@ -140,4 +140,4 @@ Nagpur, Maharashtra
 
 License
 
-This project is proprietary and owned by Chamakk.
+This project is proprietary and owned by sunhom.

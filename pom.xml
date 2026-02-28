@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+         https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
 
@@ -8,13 +9,15 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>3.5.8</version>
+        <relativePath/>
     </parent>
 
-    <groupId>com.chamakk</groupId>
-    <artifactId>backend</artifactId>
+    <!-- 🔥 BRAND UPDATED -->
+    <groupId>com.sunhom</groupId>
+    <artifactId>sunhom-backend</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>chamakk-backend</name>
-    <description>E-commerce project for Spring Boot</description>
+    <name>sunhom-backend</name>
+    <description>SUNHOM E-commerce Backend Service (Spring Boot)</description>
 
     <properties>
         <java.version>17</java.version>
@@ -53,7 +56,6 @@
             <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
 
-
         <!-- PostgreSQL -->
         <dependency>
             <groupId>org.postgresql</groupId>
@@ -69,9 +71,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- Devtools -->
-
-
         <!-- Testing -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -85,6 +84,7 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- JWT -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-api</artifactId>
@@ -105,12 +105,14 @@
             <scope>runtime</scope>
         </dependency>
 
+        <!-- Flyway -->
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
             <version>9.22.3</version>
         </dependency>
 
+        <!-- Cloudinary -->
         <dependency>
             <groupId>com.cloudinary</groupId>
             <artifactId>cloudinary-http44</artifactId>
@@ -146,6 +148,8 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
 
+            <!-- Flyway Maven Plugin -->
+            <!-- DB remains chamakk_db (unchanged intentionally) -->
             <plugin>
                 <groupId>org.flywaydb</groupId>
                 <artifactId>flyway-maven-plugin</artifactId>
@@ -162,7 +166,6 @@
                     </locations>
                 </configuration>
             </plugin>
-
 
         </plugins>
     </build>
