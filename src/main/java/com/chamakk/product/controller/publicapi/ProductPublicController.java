@@ -38,4 +38,16 @@ public class ProductPublicController {
                 "total", data.size(),
                 "data", data);
     }
+
+    // ===============================
+    // CATEGORY MAPPING METHOD
+    // ===============================
+    private String mapCategory(String category) {
+        return switch (category.toLowerCase()) {
+            case "drive" -> "drive-collection";
+            case "ritual" -> "pure-air-rituals";
+            case "candle" -> "signature-candle-collection";
+            default -> throw new IllegalArgumentException("Invalid category");
+        };
+    }
 }
