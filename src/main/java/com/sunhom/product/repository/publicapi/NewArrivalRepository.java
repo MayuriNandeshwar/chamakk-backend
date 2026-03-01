@@ -19,13 +19,15 @@ public interface NewArrivalRepository extends JpaRepository<Products, UUID> {
                 pv.sku,
                 pv.price,
                 pv.mrp,
+                CAST(
                 ROUND(
                     CASE
                         WHEN pv.mrp > 0
                         THEN ((pv.mrp - pv.price) * 100 / pv.mrp)
                         ELSE 0
                     END, 2
-                ),
+                ) AS NUMERIC
+            ),
                 primary_img.product_image_url,
                 hover_img.product_image_url,
                 (COALESCE(i.available_quantity, 0) > 0)

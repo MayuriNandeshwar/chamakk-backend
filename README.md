@@ -35,20 +35,20 @@ Secure password handling
 **Project Structure**
 backend-service/
 ├── src/main/java/com/sunhom/backend
-│   ├── controller        # REST controllers (Admin, Products, etc.)
-│   ├── dtos              # Request/Response DTOs
-│   ├── model             # JPA entities
-│   ├── repository        # Spring Data repositories
-│   ├── security          # JWT, filters, security config
-│   ├── service           # Business logic
-│   └── util              # Utility classes
+│ ├── controller # REST controllers (Admin, Products, etc.)
+│ ├── dtos # Request/Response DTOs
+│ ├── model # JPA entities
+│ ├── repository # Spring Data repositories
+│ ├── security # JWT, filters, security config
+│ ├── service # Business logic
+│ └── util # Utility classes
 │
 ├── src/main/resources
-│   └── application.properties
+│ └── application.properties
 │
 ├── database
-│   ├── sunhom_full_db.sql   # Full DB schema + seed data
-│   └── README.md             # DB restore instructions
+│ ├── sunhom_full_db.sql # Full DB schema + seed data
+│ └── README.md # DB restore instructions
 │
 ├── pom.xml
 └── README.md
@@ -59,32 +59,30 @@ Backend validates credentials
 JWT access token is generated
 Token is returned to frontend
 Frontend sends token in:
-    Authorization: Bearer <JWT_TOKEN>
+Authorization: Bearer <JWT_TOKEN>
 
 JwtAuthFilter validates token on every request
 This is the same authentication model used by platforms like Amazon, Flipkart, and Myntra admin systems.
 
 **Database Setup**
 Create Database
-      CREATE DATABASE chamakk_db;
+CREATE DATABASE sunhom_db;
 
 Restore Database
-      psql -U postgres -d chamakk_db -f database/chamakk_full_db.sql
-
+psql -U postgres -d sunhom_db -f database/chamakk_full_db.sql
 
 Full schema, relations, and base data are included.
 
 **Application Configuration**
 application.properties (example)
-spring.datasource.url=jdbc:postgresql://localhost:5432/chamakk_db
-spring.datasource.username=CHANGE_ME   # add pgadmin 4 username
-spring.datasource.password=CHANGE_ME   # add pgadmin 4 password
+spring.datasource.url=jdbc:postgresql://localhost:5432/sunhom_db
+spring.datasource.username=CHANGE_ME # add pgadmin 4 username
+spring.datasource.password=CHANGE_ME # add pgadmin 4 password
 
 spring.jpa.hibernate.ddl-auto=validate
 spring.jpa.show-sql=true
 
 server.port=8080
-
 
 ⚠️ **Never commit real credentials**.
 Use environment variables or secrets in production.
@@ -110,7 +108,6 @@ Product & variant domain modeling
 Category, pricing, stock, and discount entities
 Secure Spring Security configuration
 Clean layered architecture (Controller → Service → Repository)
-
 
 **Git & Branching Strategy**
 Default branch: main

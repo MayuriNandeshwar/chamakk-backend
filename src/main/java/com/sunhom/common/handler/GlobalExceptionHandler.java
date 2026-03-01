@@ -68,10 +68,13 @@ public class GlobalExceptionHandler {
             Exception ex,
             HttpServletRequest request) {
 
-        return buildResponse(
-                HttpStatus.INTERNAL_SERVER_ERROR,
-                "Something went wrong",
-                request.getRequestURI());
+        ex.printStackTrace(); // 🔥 PRINT REAL ERROR
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of(
+                        "error", ex.getMessage(),
+                        "exception", ex.getClass().getName(),
+                        "path", request.getRequestURI()));
     }
 
     // ===============================

@@ -16,5 +16,5 @@ required to run the Chamakk backend and admin panel locally.
 ## Step 1: Create Database
 
 ```sql
-CREATE DATABASE chamakk_db;
+CREATE DATABASE sunhom_db;
 ```

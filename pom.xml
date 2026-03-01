@@ -118,7 +118,11 @@
             <artifactId>cloudinary-http44</artifactId>
             <version>1.39.0</version>
         </dependency>
-
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -149,13 +153,13 @@
             </plugin>
 
             <!-- Flyway Maven Plugin -->
-            <!-- DB remains chamakk_db (unchanged intentionally) -->
+            <!-- DB remains sunhom_db (unchanged intentionally) -->
             <plugin>
                 <groupId>org.flywaydb</groupId>
                 <artifactId>flyway-maven-plugin</artifactId>
                 <version>9.22.3</version>
                 <configuration>
-                    <url>jdbc:postgresql://localhost:5433/chamakk_db</url>
+                    <url>jdbc:postgresql://localhost:5433/sunhom_db</url>
                     <user>postgres</user>
                     <password>postgres</password>
                     <schemas>
