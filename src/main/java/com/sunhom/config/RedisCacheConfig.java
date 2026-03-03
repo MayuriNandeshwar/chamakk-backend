@@ -25,18 +25,19 @@ import java.util.Map;
 @EnableCaching
 public class RedisCacheConfig {
 
-        @Value("${REDIS_HOST:redis}")
-        private String redisHost;
+        // @Value("${REDIS_HOST:redis}")
+        // private String redisHost;
 
-        @Value("${REDIS_PORT:6379}")
-        private int redisPort;
+        // @Value("${REDIS_PORT:6379}")
+        // private int redisPort;
 
-        @Bean
-        public RedisConnectionFactory redisConnectionFactory() {
-                RedisStandaloneConfiguration config = new RedisStandaloneConfiguration(redisHost, redisPort);
+        // @Bean
+        // public RedisConnectionFactory redisConnectionFactory() {
+        // RedisStandaloneConfiguration config = new
+        // RedisStandaloneConfiguration(redisHost, redisPort);
 
-                return new LettuceConnectionFactory(config);
-        }
+        // return new LettuceConnectionFactory(config);
+        // }
 
         @Bean
         public ObjectMapper redisCacheObjectMapper() {
