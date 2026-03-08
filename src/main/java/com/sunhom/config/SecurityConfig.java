@@ -36,12 +36,14 @@ public class SecurityConfig {
 
         @Bean
         public CorsConfigurationSource corsConfigurationSource() {
+
                 CorsConfiguration config = new CorsConfiguration();
 
                 config.setAllowedOrigins(List.of(
                                 "http://localhost:3000",
-                                "https://admin.sunhom.in" // future-ready
-                ));
+                                "https://sunhom.in",
+                                "https://www.sunhom.in",
+                                "https://admin.sunhom.in"));
 
                 config.setAllowedMethods(List.of(
                                 "GET", "POST", "PUT", "DELETE", "OPTIONS"));
@@ -52,6 +54,7 @@ public class SecurityConfig {
                                 "X-Requested-With"));
 
                 config.setExposedHeaders(List.of("Authorization"));
+
                 config.setAllowCredentials(true);
                 config.setMaxAge(3600L);
 
