@@ -132,7 +132,7 @@ public class AdminProductEditService {
         d.setFragrance(v.getFragrance());
         d.setWeightGrams(v.getWeightGrams());
         d.setSizeLabel(v.getSizeLabel());
-        d.setBurnTimeHours(v.getBurnTimeHours());
+        d.setDurationHours(v.getDurationHours());
         d.setPrice(v.getPrice());
         d.setMrp(v.getMrp());
         d.setActive(v.isActive());

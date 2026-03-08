@@ -32,8 +32,8 @@ p.product_id,
 true,
 now(),
 now(),
-NULL,
-NULL,
+NULL::uuid,
+NULL::uuid,
 true
 FROM products p
 WHERE p.slug='cinnamon-vanilla-soy-candle'
@@ -54,8 +54,8 @@ p.product_id,
 true,
 now(),
 now(),
-NULL,
-NULL,
+NULL::uuid,
+NULL::uuid,
 true
 FROM products p
 WHERE p.slug='coffee-soy-candle'
@@ -76,8 +76,8 @@ p.product_id,
 true,
 now(),
 now(),
-NULL,
-NULL,
+NULL::uuid,
+NULL::uuid,
 true
 FROM products p
 WHERE p.slug='lavender-soy-candle'
@@ -98,8 +98,8 @@ p.product_id,
 true,
 now(),
 now(),
-NULL,
-NULL,
+NULL::uuid,
+NULL::uuid,
 true
 FROM products p
 WHERE p.slug='lemongrass-soy-candle'
@@ -120,8 +120,8 @@ p.product_id,
 true,
 now(),
 now(),
-NULL,
-NULL,
+NULL::uuid,
+NULL::uuid,
 true
 FROM products p
 WHERE p.slug='mahogany-amber-soy-candle';
