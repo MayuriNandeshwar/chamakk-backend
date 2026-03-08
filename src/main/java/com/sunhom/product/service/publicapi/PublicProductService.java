@@ -32,14 +32,14 @@ public class PublicProductService {
                                 .findBySlugAndIsActiveTrue(slug)
                                 .orElseThrow(() -> new RuntimeException("Product not found"));
 
-                List<ProductVariants> variants = variantRepo.findByProducts_ProductIdAndIsActiveTrue(
-                                product.getProductId());
+                List<ProductVariants> variants = variantRepo
+                                .findByProducts_ProductIdAndIsActiveTrue(product.getProductId());
 
-                List<ProductEntityAttribute> attributes = attributeRepo.findByProducts_ProductId(
-                                product.getProductId());
+                List<ProductEntityAttribute> attributes = attributeRepo
+                                .findByProducts_ProductId(product.getProductId());
 
-                List<ProductImages> images = imageRepo.findByProducts_ProductIdOrderByPositionAsc(
-                                product.getProductId());
+                List<ProductImages> images = imageRepo
+                                .findByProducts_ProductIdOrderByPositionAsc(product.getProductId());
 
                 return PublicProductDetailDto.builder()
                                 .productId(product.getProductId())
@@ -63,6 +63,7 @@ public class PublicProductService {
         }
 
         private List<PublicVariantDto> mapVariants(List<ProductVariants> variants) {
+
                 return variants.stream()
                                 .map(v -> PublicVariantDto.builder()
                                                 .variantId(v.getVariantId())
@@ -76,8 +77,7 @@ public class PublicProductService {
                                 .toList();
         }
 
-        private List<PublicAttributeDto> mapAttributes(
-                        List<ProductEntityAttribute> attrs) {
+        private List<PublicAttributeDto> mapAttributes(List<ProductEntityAttribute> attrs) {
 
                 return attrs.stream()
                                 .map(a -> PublicAttributeDto.builder()
@@ -90,6 +90,7 @@ public class PublicProductService {
         }
 
         private Object resolveValue(ProductEntityAttribute a) {
+
                 return switch (a.getAttribute().getDataType()) {
                         case "TEXT" -> a.getValueText();
                         case "NUMBER" -> a.getValueNumber();
@@ -100,9 +101,13 @@ public class PublicProductService {
         }
 
         private List<PublicImageDto> mapImages(List<ProductImages> images) {
+
                 return images.stream()
                                 .map(i -> PublicImageDto.builder()
                                                 .url(i.getProductImageUrl())
+                                                .thumbnailUrl(i.getUrlThumbnail())
+                                                .mediumUrl(i.getUrlMedium())
+                                                .largeUrl(i.getUrlLarge())
                                                 .isPrimary(i.isPrimary())
                                                 .altText(i.getAltText())
                                                 .build())

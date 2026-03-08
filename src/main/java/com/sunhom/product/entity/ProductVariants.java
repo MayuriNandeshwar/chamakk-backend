@@ -40,8 +40,8 @@ public class ProductVariants {
 
     private String color;
 
-    @Column(name = "burn_time_hours")
-    private Integer burnTimeHours;
+    @Column(name = "duration_hours")
+    private Integer durationHours;
 
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal price;

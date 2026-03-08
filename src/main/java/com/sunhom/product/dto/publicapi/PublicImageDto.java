@@ -7,7 +7,11 @@ import lombok.*;
 @Builder
 public class PublicImageDto {
 
-    private String url;
+    private String url; // original
+    private String thumbnailUrl; // product grid
+    private String mediumUrl; // product page
+    private String largeUrl; // zoom
+
     private Boolean isPrimary;
     private String altText;
 }

@@ -48,4 +48,19 @@ public class ProductImages {
 
     @Column(name = "created_at", nullable = false)
     private OffsetDateTime createdAt;
+
+    @Column(name = "width")
+    private Integer width;
+
+    @Column(name = "height")
+    private Integer height;
+
+    @Column(name = "url_thumbnail")
+    private String urlThumbnail;
+
+    @Column(name = "url_medium")
+    private String urlMedium;
+
+    @Column(name = "url_large")
+    private String urlLarge;
 }

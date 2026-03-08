@@ -17,7 +17,7 @@ public class AdminVariantDto {
     private String fragrance;
     private Integer weightGrams;
     private String sizeLabel;
-    private Integer burnTimeHours;
+    private Integer durationHours;
 
     private BigDecimal price;
     private BigDecimal mrp;
