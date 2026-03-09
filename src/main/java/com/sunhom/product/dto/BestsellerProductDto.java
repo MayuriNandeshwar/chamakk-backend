@@ -47,6 +47,9 @@ public class BestsellerProductDto {
     @JsonProperty("imageUrl")
     private String imageUrl;
 
+    @JsonProperty("hoverImageUrl")
+    private String hoverImageUrl;
+
     @JsonProperty("inStock")
     private Boolean inStock;
 }

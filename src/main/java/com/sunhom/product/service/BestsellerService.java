@@ -22,11 +22,12 @@ public class BestsellerService {
 
     /**
      * Get bestseller products with Redis caching
-     * Cache name: bestsellers:v1 (versioned)
+     * Cache name: bestsellers:v2
      * TTL: 10 minutes
      */
-    @Cacheable(value = "bestsellers:v1")
+    @Cacheable(value = "bestsellers:v2")
     public List<BestsellerProductDto> getBestsellers() {
+
         log.info("🔥 CACHE MISS: Fetching bestsellers from database");
 
         List<Object[]> rows = repository.findBestsellersRaw();
@@ -47,16 +48,17 @@ public class BestsellerService {
                         (BigDecimal) r[6], // mrp
                         (BigDecimal) r[7], // discount_percentage
                         (String) r[8], // image_url
-                        (Boolean) r[9] // in_stock
+                        (String) r[9], // hover_image_url
+                        (Boolean) r[10] // in_stock
                 ))
                 .toList();
     }
 
     /**
-     * Clear bestsellers cache (call this when products are updated)
+     * Clear bestsellers cache
      */
-    @CacheEvict(value = "bestsellers:v1", allEntries = true)
+    @CacheEvict(value = "bestsellers:v2", allEntries = true)
     public void evictBestsellersCache() {
-        log.info("🧹 Bestseller cache cleared (v1)");
+        log.info("🧹 Bestseller cache cleared (v2)");
     }
 }

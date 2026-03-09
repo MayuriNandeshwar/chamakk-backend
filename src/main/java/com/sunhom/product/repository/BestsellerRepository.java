@@ -24,30 +24,42 @@ public interface BestsellerRepository extends JpaRepository<Products, UUID> {
                 CAST(
                     ROUND(((pv.mrp - pv.price) * 100 / pv.mrp), 2)
                     AS NUMERIC
-                ),
-                pi.product_image_url,
-                (COALESCE(i.available_quantity, 0) > 0)
+                ) AS discount_percentage,
+                pi1.product_image_url AS image_url,
+                pi2.product_image_url AS hover_image_url,
+                (COALESCE(i.available_quantity, 0) > 0) AS in_stock
             FROM products p
+
             JOIN product_variants pv
                 ON pv.product_id = p.product_id
                 AND pv.is_active = true
                 AND pv.is_default = true
+
             LEFT JOIN inventory i
                 ON i.variant_id = pv.variant_id
-            LEFT JOIN product_images pi
-                ON pi.variant_id = pv.variant_id
-                AND pi.is_primary = true
+
+            LEFT JOIN product_images pi1
+                ON pi1.variant_id = pv.variant_id
+                AND pi1.is_primary = true
+
+            LEFT JOIN product_images pi2
+                ON pi2.variant_id = pv.variant_id
+                 AND pi2.is_hover_image = true
+
             LEFT JOIN order_items oi
                 ON oi.variant_id = pv.variant_id
+
             LEFT JOIN orders o
                 ON o.order_id = oi.order_id
                 AND o.payment_status = 'PAID'
+
             WHERE p.is_active = true
             AND p.deleted_at IS NULL
             AND (
                   p.is_manual_bestseller = true
                   OR p.is_auto_bestseller = true
                 )
+
             GROUP BY
                 p.product_id,
                 p.product_name,
@@ -56,11 +68,14 @@ public interface BestsellerRepository extends JpaRepository<Products, UUID> {
                 pv.sku,
                 pv.price,
                 pv.mrp,
-                pi.product_image_url,
+                pi1.product_image_url,
+                pi2.product_image_url,
                 i.available_quantity
+
             ORDER BY
                 p.is_manual_bestseller DESC,
                 COALESCE(SUM(oi.quantity), 0) DESC
+
             LIMIT 10
             """, nativeQuery = true)
     List<Object[]> findBestsellersRaw();

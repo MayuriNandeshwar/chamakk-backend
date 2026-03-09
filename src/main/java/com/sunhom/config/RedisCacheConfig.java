@@ -67,7 +67,7 @@ public class RedisCacheConfig {
 
                 Map<String, RedisCacheConfiguration> cacheConfigurations = new HashMap<>();
 
-                cacheConfigurations.put("bestsellers:v1",
+                cacheConfigurations.put("bestsellers:v2",
                                 defaultConfig.entryTtl(Duration.ofMinutes(10)));
 
                 cacheConfigurations.put("products:v1",
